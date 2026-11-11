@@ -44,12 +44,6 @@ jobs:
       - name: Run test with coverage
         run: npm run coverage
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          base-path: ts
-          file: ts/coverage/lcov.info
-
   go:
     runs-on: ubuntu-24.04
 
