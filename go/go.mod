@@ -1,12 +1,10 @@
 module github.com/usegoodkey/pqc-ratchet/go
 
-go 1.22.0
-
-toolchain go1.22.2
+go 1.26.0
 
 require (
-	github.com/cloudflare/circl v1.6.1
-	golang.org/x/crypto v0.31.0
+	github.com/cloudflare/circl v1.6.5
+	golang.org/x/crypto v0.58.0
 )
 
-require golang.org/x/sys v0.28.0 // indirect
+require golang.org/x/sys v0.50.0 // indirect
