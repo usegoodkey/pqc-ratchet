@@ -7,17 +7,17 @@
  * decrypts Go->TS messages, encrypts replies, writes a reply fixture.
  *
  * Usage: node scripts/interop_verify.mjs <fixture.json> <reply.json>
- * Requires: npx tsc (builds dist/)
+ * Requires: npm run build (builds build/)
  */
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
-const distPath = new URL("../dist/index.js", import.meta.url).pathname;
-if (!existsSync(distPath)) {
-  console.error("dist/index.js not found — run: npx tsc");
+const buildPath = new URL("../build/index.js", import.meta.url).pathname;
+if (!existsSync(buildPath)) {
+  console.error("build/index.js not found — run: npm run build");
   process.exit(1);
 }
-const mod = await import("../dist/index.js");
+const mod = await import("../build/index.js");
 const {
   unmarshalPreKeyMessageWire, marshalSignedMessage, marshalMessageProtocol,
   unmarshalSignedMessage, buildHMACInput, createSessionResponder, hmacSHA256,

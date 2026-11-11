@@ -23,7 +23,7 @@ import {
   HYBRID_PRIVATE_KEY_SIZE, INFO_KEM_INIT,
 } from "./constants.js";
 import { hkdf, concat } from "./crypto.js";
-import { encapsulate, decapsulate, generateKEMKeyPair, HybridKEMKeyPair } from "./kem.js";
+import { encapsulate, decapsulate, generateKEMKeyPair, type HybridKEMKeyPair } from "./kem.js";
 import { dsaSign, dsaVerify } from "./sign.js";
 
 // ─── Initiator result ────────────────────────────────────────────────────────

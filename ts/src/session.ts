@@ -12,8 +12,8 @@ import {
   AES_GCM_TAG_SIZE,
 } from "./constants.js";
 import { hkdfExtract, hkdfExpand, hmacSHA256, aesGcmEncrypt, aesGcmDecrypt, concat, writeUint32BE, constantTimeEqual, zero } from "./crypto.js";
-import { SymmetricChain, KEMRatchetStep, MessageKeys, deriveMessageKeys } from "./chain.js";
-import { generateKEMKeyPair, encapsulate, decapsulate, zeroKEMKeyPair, HybridKEMKeyPair } from "./kem.js";
+import { SymmetricChain, type KEMRatchetStep, type MessageKeys, deriveMessageKeys } from "./chain.js";
+import { generateKEMKeyPair, encapsulate, decapsulate, zeroKEMKeyPair, type HybridKEMKeyPair } from "./kem.js";
 import { marshalMessageProtocol, buildHMACInput, marshalSignedMessage, unmarshalSignedMessage } from "./wire.js";
 
 // ─── Errors ──────────────────────────────────────────────────────────────────

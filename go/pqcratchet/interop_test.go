@@ -23,8 +23,9 @@ import (
 //     c. Encrypt 3 TS→Go replies.
 //  3. Go (as Alice) decrypts the TS replies.
 //
-// The test is skipped if Node.js ≥18 is not available or the TS dist/ is
-// not compiled (run `npx tsc` in the TS repo first).
+// The test is skipped if Node.js is not available or the TS build/ is
+// missing (run `npm run build` in ts/ first). With PQC_REQUIRE_INTEROP=1
+// (set in CI) it fails instead, so interop can't pass silently.
 func TestInteropGoTS(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping interop test in short mode")
@@ -36,17 +37,21 @@ func TestInteropGoTS(t *testing.T) {
 	goRepo := filepath.Dir(filepath.Dir(thisFile))
 	tsRepo := filepath.Join(filepath.Dir(goRepo), "ts")
 	tsScript := filepath.Join(tsRepo, "scripts", "interop_verify.mjs")
-	tsDist := filepath.Join(tsRepo, "dist", "index.js")
+	tsBuild := filepath.Join(tsRepo, "build", "index.js")
 
-	if _, err := os.Stat(tsDist); os.IsNotExist(err) {
-		t.Skipf("TS dist not compiled (%s not found); run `npx tsc` in %s", tsDist, tsRepo)
+	skip := t.Skipf
+	if os.Getenv("PQC_REQUIRE_INTEROP") == "1" {
+		skip = t.Fatalf
+	}
+	if _, err := os.Stat(tsBuild); os.IsNotExist(err) {
+		skip("TS build missing (%s not found); run `npm run build` in %s", tsBuild, tsRepo)
 	}
 	if _, err := os.Stat(tsScript); os.IsNotExist(err) {
-		t.Skipf("TS interop script not found at %s", tsScript)
+		skip("TS interop script not found at %s", tsScript)
 	}
 	node, err := exec.LookPath("node")
 	if err != nil {
-		t.Skip("node not found in PATH; skipping interop test")
+		skip("node not found in PATH; skipping interop test")
 	}
 
 	t.Logf("Go repo: %s", goRepo)

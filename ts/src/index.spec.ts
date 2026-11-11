@@ -1,5 +1,5 @@
 /**
- * pqcratchet.test.ts — test suite for the TypeScript pqcratchet implementation.
+ * index.spec.ts — test suite for the TypeScript pqcratchet implementation.
  *
  * Tests mirror the Go ratchet_test.go suite:
  * - KEM round-trip
@@ -14,19 +14,20 @@
  * - AD misbinding
  */
 
+import { expect, test } from "vitest";
 import {
   generateKEMKeyPair, encapsulate, decapsulate,
   HYBRID_PRIVATE_KEY_SIZE_TS,
   generateDSAKeyPair, dsaSign, dsaVerify,
   SymmetricChain, deriveMessageKeys,
   authenticateA, authenticateB,
-  generateIdentity, createSessionInitiator, createSessionResponder, PreKeyBundle,
+  generateIdentity, createSessionInitiator, createSessionResponder, type PreKeyBundle,
   concat, constantTimeEqual, randomBytes,
   HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
   DSA_SIGNATURE_SIZE,
   MAX_SKIP,
   ERR_HMAC_VERIFY_FAILED, ERR_DUPLICATE_MESSAGE,
-} from "../index.js";
+} from "./index.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -61,7 +62,7 @@ async function encryptAndBuildWire(sess: any, plaintext: Uint8Array) {
     enc.ciphertext
   );
   const hmacInput = concat(sess.ad, sess.initiatorSigningKeyBytes, sess.responderSigningKeyBytes, inner);
-  const { createHmacSHA256 } = await import("../crypto.js").then(m => ({ createHmacSHA256: m.hmacSHA256 }));
+  const { createHmacSHA256 } = await import("./crypto.js").then(m => ({ createHmacSHA256: m.hmacSHA256 }));
   const sig = await createHmacSHA256(enc.hmacKey, hmacInput);
   return { enc, inner, sig };
 }
@@ -247,7 +248,7 @@ test("full handshake and single message", async () => {
     ? concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ratchetCT, enc.ciphertext)
     : concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ciphertext);
 
-  const { hmacSHA256 } = await import("../crypto.js");
+  const { hmacSHA256 } = await import("./crypto.js");
   const hmacInput = concat(aliceSess.ad, aliceSess.initiatorSigningKeyBytes, aliceSess.responderSigningKeyBytes, inner);
   const sig = await hmacSHA256(enc.hmacKey, hmacInput);
 
@@ -260,7 +261,7 @@ test("full handshake and single message", async () => {
 
 test("multi-turn bidirectional messaging", async () => {
   const { aliceSess, bobSess } = await fullHandshake();
-  const { hmacSHA256 } = await import("../crypto.js");
+  const { hmacSHA256 } = await import("./crypto.js");
 
   async function send(senderSess: any, receiverSess: any, text: string) {
     const pt = new TextEncoder().encode(text);

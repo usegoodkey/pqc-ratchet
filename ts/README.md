@@ -5,7 +5,7 @@
 Post-quantum Double Ratchet + X3DH in TypeScript.  
 Wire-compatible with the Go module [github.com/usegoodkey/pqc-ratchet/go](https://github.com/usegoodkey/pqc-ratchet/tree/main/go).
 
-Works in **browsers, Node ≥ 18, Deno, and Bun** — uses only WebCrypto and `@noble/post-quantum`.
+Works in **browsers, Node.js `^20.19.0 || >=22.12.0`, Deno, and Bun** — uses only WebCrypto and `@noble/post-quantum`.
 
 ## Algorithms
 
