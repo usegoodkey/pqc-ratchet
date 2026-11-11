@@ -19,7 +19,7 @@
  */
 
 import { ml_kem768 } from "@noble/post-quantum/ml-kem.js";
-import { x25519 } from "@noble/curves/ed25519";
+import { x25519 } from "@noble/curves/ed25519.js";
 import {
   HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
   MLKEM_PUBLIC_KEY_SIZE, MLKEM_KEY_SEED_SIZE, MLKEM_CIPHERTEXT_SIZE,
