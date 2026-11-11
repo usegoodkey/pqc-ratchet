@@ -38,7 +38,7 @@ cd go && go test ./pqcratchet/... -run TestInteropGoTS -v
 
 ```typescript
 import { generateIdentity, createSessionInitiator, createSessionResponder }
-  from "@peculiarventures/pqc-ratchet";
+  from "@usegoodkey/pqc-ratchet";
 
 const alice = await generateIdentity(1, 2, 10);
 const bob   = await generateIdentity(2, 2, 10);
@@ -65,10 +65,10 @@ console.log(new TextDecoder().decode(pt)); // "hello"
 
 ### Sending a message (Go)
 
-Install: `go get github.com/PeculiarVentures/pqc-ratchet/go`
+Install: `go get github.com/usegoodkey/pqc-ratchet/go`
 
 ```go
-import pqc "github.com/PeculiarVentures/pqc-ratchet/go/pqcratchet"
+import pqc "github.com/usegoodkey/pqc-ratchet/go/pqcratchet"
 
 aliceID, _ := pqc.GenerateIdentity(1, 2, 10)
 bobID, _   := pqc.GenerateIdentity(2, 2, 10)

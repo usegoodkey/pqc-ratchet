@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"testing"
 
-	pqc "github.com/PeculiarVentures/pqc-ratchet/go/pqcratchet"
+	pqc "github.com/usegoodkey/pqc-ratchet/go/pqcratchet"
 )
 
 // TestInteropGoTS is an end-to-end interop test between the Go and TypeScript

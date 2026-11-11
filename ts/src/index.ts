@@ -1,7 +1,7 @@
 /**
  * pqcratchet — Post-quantum Double Ratchet + X3DH in TypeScript.
  *
- * Wire-compatible with github.com/PeculiarVentures/pqc-ratchet (Go).
+ * Wire-compatible with the Go module github.com/usegoodkey/pqc-ratchet/go.
  *
  * v0 — no API or wire stability guarantees.
  */

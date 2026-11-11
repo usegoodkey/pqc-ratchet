@@ -19,7 +19,7 @@ import (
 
 	"github.com/cloudflare/circl/sign/mldsa/mldsa65"
 
-	pqc "github.com/PeculiarVentures/pqc-ratchet/go/pqcratchet"
+	pqc "github.com/usegoodkey/pqc-ratchet/go/pqcratchet"
 )
 
 // swapPairs is how many key pairs are emitted twice, once per argument order.

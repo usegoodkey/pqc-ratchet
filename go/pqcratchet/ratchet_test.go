@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	pqc "github.com/PeculiarVentures/pqc-ratchet/go/pqcratchet"
+	pqc "github.com/usegoodkey/pqc-ratchet/go/pqcratchet"
 )
 
 // ─── KEM tests ────────────────────────────────────────────────────────────────
