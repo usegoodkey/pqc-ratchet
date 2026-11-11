@@ -172,13 +172,13 @@ import "errors"
 
 // Protocol errors.
 var (
-	ErrInvalidSignature  = errors.New("pqcratchet: invalid signature")
-	ErrDecryptionFailed  = errors.New("pqcratchet: decryption failed")
-	ErrBadPadding        = errors.New("pqcratchet: invalid PKCS7 padding")
-	ErrDuplicateMessage  = errors.New("pqcratchet: duplicate message counter")
-	ErrCounterTooLarge   = errors.New("pqcratchet: message counter exceeds max skip")
-	ErrHMACVerifyFailed  = errors.New("pqcratchet: HMAC verification failed")
-	ErrNoRatchetKey      = errors.New("pqcratchet: no remote ratchet key set")
+	ErrInvalidSignature   = errors.New("pqcratchet: invalid signature")
+	ErrDecryptionFailed   = errors.New("pqcratchet: decryption failed")
+	ErrBadPadding         = errors.New("pqcratchet: invalid PKCS7 padding")
+	ErrDuplicateMessage   = errors.New("pqcratchet: duplicate message counter")
+	ErrCounterTooLarge    = errors.New("pqcratchet: message counter exceeds max skip")
+	ErrHMACVerifyFailed   = errors.New("pqcratchet: HMAC verification failed")
+	ErrNoRatchetKey       = errors.New("pqcratchet: no remote ratchet key set")
 	ErrMissingSigningKey  = errors.New("pqcratchet: session missing signing keys for HMAC verification")
 	ErrSkippedKeyCapacity = errors.New("pqcratchet: skipped key cache full — some out-of-order messages may be unrecoverable")
 )

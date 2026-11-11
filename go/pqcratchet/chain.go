@@ -137,7 +137,7 @@ func DeriveMessageKeys(cipherKey []byte) (*MessageKeys, error) {
 // delivery. Applications with strict bandwidth constraints may wish to require
 // in-order delivery and set EpochRatchetCT only on the first message.
 type KEMRatchetStep struct {
-	RemoteRatchetKey *HybridKEMPublicKey // peer's ratchet encapsulation key
+	RemoteRatchetKey *HybridKEMPublicKey  // peer's ratchet encapsulation key
 	EpochRatchetCT   *HybridKEMCiphertext // CT that opened this sending epoch
 	SendingChain     *SymmetricChain
 	ReceivingChain   *SymmetricChain

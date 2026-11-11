@@ -122,7 +122,7 @@ type ParsedMessageProtocol struct {
 
 // ParsedMessageSigned holds a decoded outer signed envelope.
 type ParsedMessageSigned struct {
-	Signature  []byte                 // 32 bytes (HMAC-SHA-256)
+	Signature  []byte // 32 bytes (HMAC-SHA-256)
 	Message    *ParsedMessageProtocol
 	MessageRaw []byte // raw bytes of the inner message (for HMAC verification)
 }
@@ -131,15 +131,15 @@ type ParsedMessageSigned struct {
 
 // BundleWire is the serialisable form of a PreKeyBundle.
 type BundleWire struct {
-	RegistrationID    uint32
-	SignedPreKeyIndex uint32
-	SigningPub        [DSAPublicKeySize]byte
-	ExchangeKeySig    [DSASignatureSize]byte
-	ExchangePub       [HybridPublicKeySize]byte
-	SignedPreKeyPub   [HybridPublicKeySize]byte
-	SignedPreKeySig   [DSASignatureSize]byte
-	HasOneTimePreKey  bool
-	OneTimePreKeyPub  [HybridPublicKeySize]byte
+	RegistrationID     uint32
+	SignedPreKeyIndex  uint32
+	SigningPub         [DSAPublicKeySize]byte
+	ExchangeKeySig     [DSASignatureSize]byte
+	ExchangePub        [HybridPublicKeySize]byte
+	SignedPreKeyPub    [HybridPublicKeySize]byte
+	SignedPreKeySig    [DSASignatureSize]byte
+	HasOneTimePreKey   bool
+	OneTimePreKeyPub   [HybridPublicKeySize]byte
 	OneTimePreKeyIndex uint32
 }
 
@@ -235,13 +235,13 @@ func ParseBundleWire(b *BundleWire) (*PreKeyBundle, error) {
 	copy(spkPub[:], b.SignedPreKeyPub[:])
 
 	bundle := &PreKeyBundle{
-		RegistrationID:         int(b.RegistrationID),
-		IdentitySigningPub:     sigPub,
+		RegistrationID:          int(b.RegistrationID),
+		IdentitySigningPub:      sigPub,
 		IdentitySigningPubBytes: b.SigningPub[:],
-		IdentityExchangePub:    &exPub,
-		SignedPreKeyPub:        &spkPub,
-		SignedPreKeyIndex:      int(b.SignedPreKeyIndex),
-		OneTimePreKeyIndex:     -1,
+		IdentityExchangePub:     &exPub,
+		SignedPreKeyPub:         &spkPub,
+		SignedPreKeyIndex:       int(b.SignedPreKeyIndex),
+		OneTimePreKeyIndex:      -1,
 	}
 	if b.HasOneTimePreKey {
 		var opkPub HybridKEMPublicKey
@@ -260,7 +260,7 @@ func MakeBundleWire(id *Identity, spkIndex int, opkIndex int) (*BundleWire, erro
 	sigPubBytes := DSAPublicKeyBytes(id.SigningKey.Public)
 
 	b := &BundleWire{
-		RegistrationID:   uint32(id.ID),
+		RegistrationID:    uint32(id.ID),
 		SignedPreKeyIndex: uint32(spkIndex),
 	}
 	copy(b.SigningPub[:], sigPubBytes)
@@ -421,7 +421,7 @@ func ParsePreKeyMessageWire(m *PreKeyMessageWire) (*PreKeyMessage, error) {
 
 	msg := &PreKeyMessage{
 		RegistrationID:          int(m.RegistrationID),
-		SignedPreKeyIndex:        int(m.SignedPreKeyIndex),
+		SignedPreKeyIndex:       int(m.SignedPreKeyIndex),
 		OneTimePreKeyIndex:      -1,
 		IdentitySigningPub:      sigPub,
 		IdentitySigningPubBytes: m.SigningPub[:],

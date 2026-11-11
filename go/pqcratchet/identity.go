@@ -26,9 +26,9 @@ type Identity struct {
 	// mu protects PreKeys against concurrent OPK reservation in CreateSessionResponder.
 	mu sync.Mutex
 
-	ID            int
-	SigningKey     *DSAKeyPair
-	ExchangeKey   *HybridKEMKeyPair
+	ID          int
+	SigningKey  *DSAKeyPair
+	ExchangeKey *HybridKEMKeyPair
 
 	// ExchangeKeySignature is the signing key's signature over the exchange
 	// public key bytes. Included in every PreKeyBundle so remote peers can
@@ -36,8 +36,8 @@ type Identity struct {
 	ExchangeKeySignature []byte
 
 	// SignedPreKeys are medium-term KEM key pairs, each signed by SigningKey.
-	SignedPreKeys      []*HybridKEMKeyPair
-	SignedPreKeySigs   [][]byte // parallel slice: sig[i] covers SignedPreKeys[i].Public[:]
+	SignedPreKeys    []*HybridKEMKeyPair
+	SignedPreKeySigs [][]byte // parallel slice: sig[i] covers SignedPreKeys[i].Public[:]
 
 	// PreKeys are one-time KEM key pairs (unsigned, consumed on use).
 	PreKeys []*HybridKEMKeyPair
@@ -68,7 +68,7 @@ func generateIdentity(id, signedPreKeyCount, preKeyCount int, r io.Reader) (*Ide
 
 	ident := &Identity{
 		ID:                   id,
-		SigningKey:            sigKP,
+		SigningKey:           sigKP,
 		ExchangeKey:          exKP,
 		ExchangeKeySignature: exSig,
 	}
@@ -114,27 +114,27 @@ func Thumbprint(pubKeyBytes []byte) string {
 // assembled after signature verification (see VerifyPreKeyBundle /
 // VerifyPreKeyMessage in session.go).
 type RemoteIdentity struct {
-	ID                  int
-	SigningKeyBytes      []byte // DSAPublicKeySize bytes
-	ExchangeKeyBytes    []byte // HybridPublicKeySize bytes
-	ExchangeKeySig      []byte // DSASignatureSize bytes
-	Thumbprint          string // hex SHA-256 of SigningKeyBytes
+	ID               int
+	SigningKeyBytes  []byte // DSAPublicKeySize bytes
+	ExchangeKeyBytes []byte // HybridPublicKeySize bytes
+	ExchangeKeySig   []byte // DSASignatureSize bytes
+	Thumbprint       string // hex SHA-256 of SigningKeyBytes
 }
 
 // ─── JSON serialisation ───────────────────────────────────────────────────────
 
 type jsonIdentity struct {
-	ID                   int      `json:"id"`
-	SigningPriv          string   `json:"signingPriv"`  // hex
-	SigningPub           string   `json:"signingPub"`   // hex
-	ExchangePriv         string   `json:"exchangePriv"` // hex
-	ExchangePub          string   `json:"exchangePub"`  // hex
-	ExchangeKeySig       string   `json:"exchangeKeySig"` // hex
-	SignedPreKeyPrivs    []string `json:"signedPreKeyPrivs"`
-	SignedPreKeyPubs     []string `json:"signedPreKeyPubs"`
-	SignedPreKeySigs     []string `json:"signedPreKeySigs"`
-	PreKeyPrivs          []string `json:"preKeyPrivs"`
-	PreKeyPubs           []string `json:"preKeyPubs"`
+	ID                int      `json:"id"`
+	SigningPriv       string   `json:"signingPriv"`    // hex
+	SigningPub        string   `json:"signingPub"`     // hex
+	ExchangePriv      string   `json:"exchangePriv"`   // hex
+	ExchangePub       string   `json:"exchangePub"`    // hex
+	ExchangeKeySig    string   `json:"exchangeKeySig"` // hex
+	SignedPreKeyPrivs []string `json:"signedPreKeyPrivs"`
+	SignedPreKeyPubs  []string `json:"signedPreKeyPubs"`
+	SignedPreKeySigs  []string `json:"signedPreKeySigs"`
+	PreKeyPrivs       []string `json:"preKeyPrivs"`
+	PreKeyPubs        []string `json:"preKeyPubs"`
 }
 
 // MarshalJSON serialises the complete Identity including all private key material.
