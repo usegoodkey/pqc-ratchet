@@ -4,7 +4,7 @@
 
 import { generateKEMKeyPair, type HybridKEMKeyPair, zeroKEMKeyPair } from "./kem.js";
 import { generateDSAKeyPair, type DSAKeyPair, dsaSign, dsaVerify } from "./sign.js";
-import { authenticateA, authenticateB, type KEMInitiatorResult } from "./x3dh.js";
+import { authenticateA, authenticateB } from "./x3dh.js";
 import { Session } from "./session.js";
 import { concat } from "./crypto.js";
 

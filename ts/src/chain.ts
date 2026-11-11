@@ -14,9 +14,8 @@
 
 import {
   CIPHER_KEY_KDF_INPUT, ROOT_KEY_KDF_INPUT, INFO_MESSAGE_KEYS,
-  HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
 } from "./constants.js";
-import { hmacSHA256, hkdf, concat } from "./crypto.js";
+import { hmacSHA256, hkdf } from "./crypto.js";
 
 // ─── MessageKeys ─────────────────────────────────────────────────────────────
 

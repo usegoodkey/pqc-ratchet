@@ -19,8 +19,7 @@
  */
 
 import {
-  HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
-  HYBRID_PRIVATE_KEY_SIZE, INFO_KEM_INIT,
+  INFO_KEM_INIT,
 } from "./constants.js";
 import { hkdf, concat } from "./crypto.js";
 import { encapsulate, decapsulate, generateKEMKeyPair, type HybridKEMKeyPair } from "./kem.js";

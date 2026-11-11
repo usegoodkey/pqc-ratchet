@@ -7,12 +7,10 @@
  */
 
 import {
-  INFO_RATCHET, MAX_SKIP, MAX_OLD_EPOCH_SKIP, MAX_RATCHET_STACK_SIZE,
-  HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
-  AES_GCM_TAG_SIZE,
+  INFO_RATCHET, MAX_SKIP, MAX_OLD_EPOCH_SKIP,
 } from "./constants.js";
-import { hkdfExtract, hkdfExpand, hmacSHA256, aesGcmEncrypt, aesGcmDecrypt, concat, writeUint32BE, constantTimeEqual, zero } from "./crypto.js";
-import { SymmetricChain, type KEMRatchetStep, type MessageKeys, deriveMessageKeys } from "./chain.js";
+import { hkdfExtract, hkdfExpand, hmacSHA256, aesGcmEncrypt, aesGcmDecrypt, concat, constantTimeEqual } from "./crypto.js";
+import { SymmetricChain, type KEMRatchetStep, deriveMessageKeys } from "./chain.js";
 import { generateKEMKeyPair, encapsulate, decapsulate, zeroKEMKeyPair, type HybridKEMKeyPair } from "./kem.js";
 import { marshalMessageProtocol, buildHMACInput, marshalSignedMessage, unmarshalSignedMessage } from "./wire.js";
 

@@ -21,12 +21,10 @@ import {
   generateDSAKeyPair, dsaSign, dsaVerify,
   SymmetricChain, deriveMessageKeys,
   authenticateA, authenticateB,
-  generateIdentity, createSessionInitiator, createSessionResponder, type PreKeyBundle,
-  concat, constantTimeEqual, randomBytes,
+  generateIdentity, createSessionInitiator, createSessionResponder,
+  concat, randomBytes,
   HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
   DSA_SIGNATURE_SIZE,
-  MAX_SKIP,
-  ERR_HMAC_VERIFY_FAILED, ERR_DUPLICATE_MESSAGE,
 } from "./index.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -50,21 +48,6 @@ async function fullHandshake() {
   const bobSess = await createSessionResponder(bob, preKeyMessage);
 
   return { alice, bob, aliceSess, bobSess };
-}
-
-async function encryptAndBuildWire(sess: any, plaintext: Uint8Array) {
-  const enc = await sess.encryptMessage(plaintext);
-  // Build a minimal inner message bytes for HMAC purposes
-  const counterBytes = new Uint8Array(4);
-  new DataView(counterBytes.buffer).setUint32(0, enc.counter, false);
-  const inner = concat(counterBytes, enc.newRatchetPub,
-    enc.ratchetCT ? new Uint8Array([1, ...enc.ratchetCT]) : new Uint8Array([0]),
-    enc.ciphertext
-  );
-  const hmacInput = concat(sess.ad, sess.initiatorSigningKeyBytes, sess.responderSigningKeyBytes, inner);
-  const { createHmacSHA256 } = await import("./crypto.js").then(m => ({ createHmacSHA256: m.hmacSHA256 }));
-  const sig = await createHmacSHA256(enc.hmacKey, hmacInput);
-  return { enc, inner, sig };
 }
 
 // ─── KEM tests ───────────────────────────────────────────────────────────────
