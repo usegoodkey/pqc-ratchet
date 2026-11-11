@@ -24,10 +24,7 @@ function toBuffer(u: Uint8Array): ArrayBuffer {
  * hkdfExtract: PRK = HMAC-SHA256(salt, ikm)  (RFC 5869 §2.2)
  */
 export async function hkdfExtract(salt: Uint8Array, ikm: Uint8Array): Promise<Uint8Array> {
-  const saltKey = await subtle.importKey(
-    "raw", toBuffer(salt),
-    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
+  const saltKey = await subtle.importKey("raw", toBuffer(salt), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const prk = await subtle.sign("HMAC", saltKey, toBuffer(ikm));
   return new Uint8Array(prk);
 }
@@ -36,10 +33,7 @@ export async function hkdfExtract(salt: Uint8Array, ikm: Uint8Array): Promise<Ui
  * hkdfExpand: OKM = T(1) || T(2) || ...  (RFC 5869 §2.3)
  */
 export async function hkdfExpand(prk: Uint8Array, info: Uint8Array, length: number): Promise<Uint8Array> {
-  const prkKey = await subtle.importKey(
-    "raw", toBuffer(prk),
-    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
+  const prkKey = await subtle.importKey("raw", toBuffer(prk), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const okm = new Uint8Array(length);
   let t = new Uint8Array(0);
   let pos = 0;
@@ -58,9 +52,7 @@ export async function hkdfExpand(prk: Uint8Array, info: Uint8Array, length: numb
  * hkdf: Extract-then-Expand.
  * Equivalent to Go's hkdf.New(sha256, ikm, salt, info) read to `length` bytes.
  */
-export async function hkdf(
-  ikm: Uint8Array, salt: Uint8Array, info: Uint8Array, length: number
-): Promise<Uint8Array> {
+export async function hkdf(ikm: Uint8Array, salt: Uint8Array, info: Uint8Array, length: number): Promise<Uint8Array> {
   const prk = await hkdfExtract(salt, ikm);
   return hkdfExpand(prk, info, length);
 }
@@ -68,21 +60,13 @@ export async function hkdf(
 // --- HMAC-SHA-256 ----------------------------------------------------------
 
 export async function hmacSHA256(key: Uint8Array, data: Uint8Array): Promise<Uint8Array> {
-  const k = await subtle.importKey(
-    "raw", toBuffer(key),
-    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
+  const k = await subtle.importKey("raw", toBuffer(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const sig = await subtle.sign("HMAC", k, toBuffer(data));
   return new Uint8Array(sig);
 }
 
-export async function hmacSHA256Verify(
-  key: Uint8Array, data: Uint8Array, expected: Uint8Array
-): Promise<boolean> {
-  const k = await subtle.importKey(
-    "raw", toBuffer(key),
-    { name: "HMAC", hash: "SHA-256" }, false, ["verify"]
-  );
+export async function hmacSHA256Verify(key: Uint8Array, data: Uint8Array, expected: Uint8Array): Promise<boolean> {
+  const k = await subtle.importKey("raw", toBuffer(key), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
   return subtle.verify("HMAC", k, toBuffer(expected), toBuffer(data));
 }
 
@@ -100,14 +84,9 @@ export async function sha256(data: Uint8Array): Promise<Uint8Array> {
  * ad is the session associated data: Encode(IK_A.ex) || Encode(IK_B.ex).
  * Returns ciphertext || 16-byte tag.
  */
-export async function aesGcmEncrypt(
-  key: Uint8Array, nonce: Uint8Array, ad: Uint8Array, plaintext: Uint8Array
-): Promise<Uint8Array> {
+export async function aesGcmEncrypt(key: Uint8Array, nonce: Uint8Array, ad: Uint8Array, plaintext: Uint8Array): Promise<Uint8Array> {
   const k = await subtle.importKey("raw", toBuffer(key), { name: "AES-GCM" }, false, ["encrypt"]);
-  const ct = await subtle.encrypt(
-    { name: "AES-GCM", iv: toBuffer(nonce), additionalData: toBuffer(ad), tagLength: 128 },
-    k, toBuffer(plaintext)
-  );
+  const ct = await subtle.encrypt({ name: "AES-GCM", iv: toBuffer(nonce), additionalData: toBuffer(ad), tagLength: 128 }, k, toBuffer(plaintext));
   return new Uint8Array(ct);
 }
 
@@ -115,15 +94,10 @@ export async function aesGcmEncrypt(
  * aesGcmDecrypt decrypts and authenticates with AES-256-GCM.
  * Throws "pqcratchet: decryption failed" on authentication failure.
  */
-export async function aesGcmDecrypt(
-  key: Uint8Array, nonce: Uint8Array, ad: Uint8Array, ciphertext: Uint8Array
-): Promise<Uint8Array> {
+export async function aesGcmDecrypt(key: Uint8Array, nonce: Uint8Array, ad: Uint8Array, ciphertext: Uint8Array): Promise<Uint8Array> {
   const k = await subtle.importKey("raw", toBuffer(key), { name: "AES-GCM" }, false, ["decrypt"]);
   try {
-    const pt = await subtle.decrypt(
-      { name: "AES-GCM", iv: toBuffer(nonce), additionalData: toBuffer(ad), tagLength: 128 },
-      k, toBuffer(ciphertext)
-    );
+    const pt = await subtle.decrypt({ name: "AES-GCM", iv: toBuffer(nonce), additionalData: toBuffer(ad), tagLength: 128 }, k, toBuffer(ciphertext));
     return new Uint8Array(pt);
   } catch {
     throw new Error("pqcratchet: decryption failed");
@@ -136,7 +110,10 @@ export function concat(...arrays: Uint8Array[]): Uint8Array {
   const total = arrays.reduce((n, a) => n + a.length, 0);
   const out = new Uint8Array(total);
   let pos = 0;
-  for (const a of arrays) { out.set(a, pos); pos += a.length; }
+  for (const a of arrays) {
+    out.set(a, pos);
+    pos += a.length;
+  }
   return out;
 }
 

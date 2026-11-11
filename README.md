@@ -30,7 +30,7 @@ cd go && go test ./pqcratchet/...
 cd ts && npm install && npm test
 
 # Cross-language interop test (Go ↔ TypeScript on the same wire format)
-cd ts && npx tsc && cd ..
+cd ts && npm run build && cd ..
 cd go && go test ./pqcratchet/... -run TestInteropGoTS -v
 ```
 

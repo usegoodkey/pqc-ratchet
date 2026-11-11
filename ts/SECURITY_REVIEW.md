@@ -165,16 +165,16 @@ All WebCrypto calls use `toBuffer()`.
 
 ## Test coverage
 
-| Category | Tests |
-|----------|-------|
-| KEM round-trip, wrong key, sizes, determinism | 5 |
-| DSA sign/verify, wrong key, tamper | 3 |
-| Symmetric chain, message key derivation | 2 |
-| X3DH both sides, no OPK, invalid sig | 3 |
-| Full handshake + encrypt/decrypt | 1 |
-| Multi-turn bidirectional messaging | 1 |
-| OPK restoration on auth failure | 1 |
-| **Total** | **16** |
+| Category                                      | Tests  |
+| --------------------------------------------- | ------ |
+| KEM round-trip, wrong key, sizes, determinism | 5      |
+| DSA sign/verify, wrong key, tamper            | 3      |
+| Symmetric chain, message key derivation       | 2      |
+| X3DH both sides, no OPK, invalid sig          | 3      |
+| Full handshake + encrypt/decrypt              | 1      |
+| Multi-turn bidirectional messaging            | 1      |
+| OPK restoration on auth failure               | 1      |
+| **Total**                                     | **16** |
 
 The interop test (`TestInteropGoTS` in the Go repo) adds cross-implementation
 validation: 5 Go→TS messages and 3 TS→Go replies, all decrypted correctly.

@@ -5,17 +5,17 @@
 Post-quantum Double Ratchet + X3DH in TypeScript.  
 Wire-compatible with the Go module [github.com/usegoodkey/pqc-ratchet/go](https://github.com/usegoodkey/pqc-ratchet/tree/main/go).
 
-Works in **browsers, Node ≥ 18, Deno, and Bun** — uses only WebCrypto and `@noble/post-quantum`.
+Works in **browsers, Node.js `^20.19.0 || >=22.12.0`, Deno, and Bun** — uses only WebCrypto and `@noble/post-quantum`.
 
 ## Algorithms
 
-| Role | Algorithm | Standard |
-|------|-----------|----------|
-| Signing | ML-DSA-65 | FIPS 204 |
-| Key exchange | ML-KEM-768 + X25519 (hybrid) | FIPS 203 + RFC 7748 |
-| Message encryption | AES-256-GCM | FIPS 197 |
-| Message authentication | HMAC-SHA-256 | FIPS 198 |
-| KDF | HKDF-SHA-256 | SP 800-56C |
+| Role                   | Algorithm                    | Standard            |
+| ---------------------- | ---------------------------- | ------------------- |
+| Signing                | ML-DSA-65                    | FIPS 204            |
+| Key exchange           | ML-KEM-768 + X25519 (hybrid) | FIPS 203 + RFC 7748 |
+| Message encryption     | AES-256-GCM                  | FIPS 197            |
+| Message authentication | HMAC-SHA-256                 | FIPS 198            |
+| KDF                    | HKDF-SHA-256                 | SP 800-56C          |
 
 `@noble/post-quantum` is not FIPS-validated (no CMVP certificate), but is independently audited by Trail of Bits and implements FIPS 203/204 correctly. For environments requiring CMVP validation, use the Go implementation with a FIPS-validated Go crypto module.
 
@@ -46,26 +46,22 @@ npm install @usegoodkey/pqc-ratchet
 ## Quick start
 
 ```typescript
-import {
-  generateIdentity,
-  createSessionInitiator,
-  createSessionResponder,
-} from "@usegoodkey/pqc-ratchet";
+import { generateIdentity, createSessionInitiator, createSessionResponder } from "@usegoodkey/pqc-ratchet";
 
 // Generate identities
 const alice = await generateIdentity(1, 1, 10);
-const bob   = await generateIdentity(2, 1, 10);
+const bob = await generateIdentity(2, 1, 10);
 
 // Bob publishes a prekey bundle
 const bundle = {
-  registrationId:      bob.id,
-  identitySigningPub:  bob.signingKey.publicKey,
+  registrationId: bob.id,
+  identitySigningPub: bob.signingKey.publicKey,
   identityExchangePub: bob.exchangeKey.publicKey,
-  signedPreKeyPub:     bob.signedPreKeys[0].publicKey,
-  signedPreKeyIndex:   0,
-  signedPreKeySig:     bob.signedPreKeySigs[0],
-  oneTimePreKeyPub:    bob.preKeys[0]!.publicKey,
-  oneTimePreKeyIndex:  0,
+  signedPreKeyPub: bob.signedPreKeys[0].publicKey,
+  signedPreKeyIndex: 0,
+  signedPreKeySig: bob.signedPreKeySigs[0],
+  oneTimePreKeyPub: bob.preKeys[0]!.publicKey,
+  oneTimePreKeyIndex: 0,
 };
 
 // Alice initiates a session
@@ -89,11 +85,11 @@ also exported.
 
 ## Dependencies
 
-| Package | Purpose |
-|---------|---------|
+| Package               | Purpose                                     |
+| --------------------- | ------------------------------------------- |
 | `@noble/post-quantum` | ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204) |
-| `@noble/curves` | X25519 |
-| `@noble/hashes` | SHA-256 (via noble transitive dep) |
+| `@noble/curves`       | X25519                                      |
+| `@noble/hashes`       | SHA-256 (via noble transitive dep)          |
 
 WebCrypto (built-in) handles AES-256-GCM, HMAC-SHA-256, HKDF-SHA-256.
 

@@ -12,17 +12,14 @@
  *     hmacKey = bytes[44:76]
  */
 
-import {
-  CIPHER_KEY_KDF_INPUT, ROOT_KEY_KDF_INPUT, INFO_MESSAGE_KEYS,
-  HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
-} from "./constants.js";
-import { hmacSHA256, hkdf, concat } from "./crypto.js";
+import { CIPHER_KEY_KDF_INPUT, ROOT_KEY_KDF_INPUT, INFO_MESSAGE_KEYS } from "./constants.js";
+import { hmacSHA256, hkdf } from "./crypto.js";
 
 // ─── MessageKeys ─────────────────────────────────────────────────────────────
 
 export interface MessageKeys {
-  aesKey: Uint8Array;  // 32 bytes
-  nonce: Uint8Array;   // 12 bytes
+  aesKey: Uint8Array; // 32 bytes
+  nonce: Uint8Array; // 12 bytes
   hmacKey: Uint8Array; // 32 bytes
 }
 
@@ -63,8 +60,8 @@ export class SymmetricChain {
 // ─── KEMRatchetStep ──────────────────────────────────────────────────────────
 
 export interface KEMRatchetStep {
-  remoteRatchetKey: Uint8Array;        // peer's ratchet encapsulation key
-  epochRatchetCT: Uint8Array | null;   // CT that opened this sending epoch
+  remoteRatchetKey: Uint8Array; // peer's ratchet encapsulation key
+  epochRatchetCT: Uint8Array | null; // CT that opened this sending epoch
   sendingChain: SymmetricChain | null;
   receivingChain: SymmetricChain | null;
 }

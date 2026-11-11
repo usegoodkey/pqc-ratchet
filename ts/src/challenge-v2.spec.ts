@@ -1,16 +1,11 @@
 /**
- * challenge_v2.test.ts — checks the commit-then-reveal pairing code against go/pqcratchet/testdata/challenge_v2_vectors.json.
+ * challenge-v2.spec.ts — checks the commit-then-reveal pairing code against go/pqcratchet/testdata/challenge_v2_vectors.json.
  */
 
+import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import {
-  CHALLENGE_NONCE_SIZE,
-  commitChallengeNonce,
-  computeChallengeV2,
-  newChallengeNonce,
-  verifyChallengeCommit,
-} from "../index.js";
+import { CHALLENGE_NONCE_SIZE, commitChallengeNonce, computeChallengeV2, newChallengeNonce, verifyChallengeCommit } from "./index.js";
 
 interface Vector {
   note: string;
@@ -23,9 +18,7 @@ interface Vector {
 }
 
 // The vectors live in the Go module so they ship with it; resolve them from this file, not cwd.
-const vectorsPath = fileURLToPath(
-  new URL("../../../go/pqcratchet/testdata/challenge_v2_vectors.json", import.meta.url),
-);
+const vectorsPath = fileURLToPath(new URL("../../go/pqcratchet/testdata/challenge_v2_vectors.json", import.meta.url));
 const { vectors } = JSON.parse(readFileSync(vectorsPath, "utf8")) as { vectors: Vector[] };
 
 const fromHex = (h: string) => Uint8Array.from(Buffer.from(h, "hex"));

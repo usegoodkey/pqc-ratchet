@@ -2,9 +2,9 @@
  * identity.ts — Identity and session bootstrap.
  */
 
-import { generateKEMKeyPair, HybridKEMKeyPair, zeroKEMKeyPair } from "./kem.js";
-import { generateDSAKeyPair, DSAKeyPair, dsaSign, dsaVerify } from "./sign.js";
-import { authenticateA, authenticateB, KEMInitiatorResult } from "./x3dh.js";
+import { generateKEMKeyPair, type HybridKEMKeyPair, zeroKEMKeyPair } from "./kem.js";
+import { generateDSAKeyPair, type DSAKeyPair, dsaSign, dsaVerify } from "./sign.js";
+import { authenticateA, authenticateB } from "./x3dh.js";
 import { Session } from "./session.js";
 import { concat } from "./crypto.js";
 
@@ -36,7 +36,7 @@ export interface PreKeyMessage {
   identitySigningPub: Uint8Array;
   identityExchangePub: Uint8Array;
   exchangeKeySig: Uint8Array;
-  baseKey: Uint8Array;  // EK_A.pub
+  baseKey: Uint8Array; // EK_A.pub
   ct1: Uint8Array;
   ct2: Uint8Array;
   ct4: Uint8Array | null;
@@ -47,11 +47,7 @@ export interface PreKeyMessage {
 
 // ─── Generate identity ───────────────────────────────────────────────────────
 
-export async function generateIdentity(
-  id: number,
-  numSignedPreKeys: number,
-  numOneTimePreKeys: number,
-): Promise<Identity> {
+export async function generateIdentity(id: number, numSignedPreKeys: number, numOneTimePreKeys: number): Promise<Identity> {
   const signingKey = generateDSAKeyPair();
   const exchangeKey = generateKEMKeyPair();
 
@@ -94,34 +90,19 @@ export interface InitiatorSessionResult {
  * createSessionInitiator creates a session from Alice's perspective.
  * Validates the bundle signatures before proceeding.
  */
-export async function createSessionInitiator(
-  initiatorIdentity: Identity,
-  bundle: PreKeyBundle,
-): Promise<InitiatorSessionResult> {
+export async function createSessionInitiator(initiatorIdentity: Identity, bundle: PreKeyBundle): Promise<InitiatorSessionResult> {
   // Verify signed pre-key signature
   if (!dsaVerify(bundle.identitySigningPub, bundle.signedPreKeyPub, bundle.signedPreKeySig)) {
     throw new Error("pqcratchet: invalid signed pre-key signature");
   }
 
-  const x3dhResult = await authenticateA(
-    initiatorIdentity.signingKey.privateKey,
-    initiatorIdentity.exchangeKey.publicKey,
-    bundle.identityExchangePub,
-    bundle.signedPreKeyPub,
-    bundle.oneTimePreKeyPub,
-  );
+  const x3dhResult = await authenticateA(initiatorIdentity.signingKey.privateKey, initiatorIdentity.exchangeKey.publicKey, bundle.identityExchangePub, bundle.signedPreKeyPub, bundle.oneTimePreKeyPub);
 
   // AD = Encode(IK_A.ex) || Encode(IK_B.ex)
   const ad = concat(initiatorIdentity.exchangeKey.publicKey, bundle.identityExchangePub);
 
   // Session: Alice starts with ephemeral keypair as ratchet key
-  const session = new Session(
-    x3dhResult.rootKey,
-    x3dhResult.ephemeralKP,
-    ad,
-    initiatorIdentity.signingKey.publicKey,
-    bundle.identitySigningPub,
-  );
+  const session = new Session(x3dhResult.rootKey, x3dhResult.ephemeralKP, ad, initiatorIdentity.signingKey.publicKey, bundle.identitySigningPub);
 
   // Initiator needs to set the remote ratchet key so the first send can encapsulate.
   // Alice's initial remote ratchet key is Bob's signed pre-key (not his exchange key).
@@ -156,10 +137,7 @@ export async function createSessionInitiator(
  * createSessionResponder creates a session from Bob's perspective.
  * Verifies the initiator's exchange key signature and transcript signature.
  */
-export async function createSessionResponder(
-  responderIdentity: Identity,
-  msg: PreKeyMessage,
-): Promise<Session> {
+export async function createSessionResponder(responderIdentity: Identity, msg: PreKeyMessage): Promise<Session> {
   // Verify Alice's exchange key signature
   if (!dsaVerify(msg.identitySigningPub, msg.identityExchangePub, msg.exchangeKeySig)) {
     throw new Error("pqcratchet: invalid exchange key signature");

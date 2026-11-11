@@ -7,7 +7,7 @@
 
 // ML-KEM-768 sizes (FIPS 203)
 export const MLKEM_PUBLIC_KEY_SIZE = 1184;
-export const MLKEM_KEY_SEED_SIZE = 64;       // d || z seed stored instead of expanded key
+export const MLKEM_KEY_SEED_SIZE = 64; // d || z seed stored instead of expanded key
 export const MLKEM_CIPHERTEXT_SIZE = 1088;
 export const MLKEM_ENCAP_SEED_SIZE = 32;
 export const MLKEM_SHARED_KEY_SIZE = 32;
@@ -16,9 +16,9 @@ export const MLKEM_SHARED_KEY_SIZE = 32;
 export const X25519_KEY_SIZE = 32;
 
 // Hybrid KEM wire sizes
-export const HYBRID_PUBLIC_KEY_SIZE = MLKEM_PUBLIC_KEY_SIZE + X25519_KEY_SIZE;   // 1216
-export const HYBRID_PRIVATE_KEY_SIZE = MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE;   // 96
-export const HYBRID_CIPHERTEXT_SIZE = MLKEM_CIPHERTEXT_SIZE + X25519_KEY_SIZE;  // 1120
+export const HYBRID_PUBLIC_KEY_SIZE = MLKEM_PUBLIC_KEY_SIZE + X25519_KEY_SIZE; // 1216
+export const HYBRID_PRIVATE_KEY_SIZE = MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE; // 96
+export const HYBRID_CIPHERTEXT_SIZE = MLKEM_CIPHERTEXT_SIZE + X25519_KEY_SIZE; // 1120
 
 // ML-DSA-65 sizes (FIPS 204)
 export const DSA_PUBLIC_KEY_SIZE = 1952;

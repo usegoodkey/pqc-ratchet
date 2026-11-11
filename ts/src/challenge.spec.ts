@@ -1,10 +1,11 @@
 /**
- * challenge.test.ts — checks computeChallenge against the shared vectors in go/pqcratchet/testdata/.
+ * challenge.spec.ts — checks computeChallenge against the shared vectors in go/pqcratchet/testdata/.
  */
 
+import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { computeChallenge } from "../index.js";
+import { computeChallenge } from "./index.js";
 
 interface Vector {
   serverSigningPub: string;
@@ -13,9 +14,7 @@ interface Vector {
 }
 
 // The vectors live in the Go module so they ship with it; resolve them from this file, not cwd.
-const vectorsPath = fileURLToPath(
-  new URL("../../../go/pqcratchet/testdata/challenge_vectors.json", import.meta.url),
-);
+const vectorsPath = fileURLToPath(new URL("../../go/pqcratchet/testdata/challenge_vectors.json", import.meta.url));
 const { vectors } = JSON.parse(readFileSync(vectorsPath, "utf8")) as { vectors: Vector[] };
 
 const fromHex = (h: string) => Uint8Array.from(Buffer.from(h, "hex"));
