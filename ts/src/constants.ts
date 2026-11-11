@@ -46,5 +46,5 @@ export const ROOT_KEY_KDF_INPUT = new Uint8Array([0x02]);
 
 // Wire protocol version
 
-// Max ciphertext size (1 MiB)
-export const MAX_CIPHERTEXT_SIZE = 1024 * 1024;
+// Max ciphertext size (128 MiB), as the Go parser enforces
+export const MAX_CIPHERTEXT_SIZE = 128 * 1024 * 1024;

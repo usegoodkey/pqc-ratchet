@@ -103,9 +103,10 @@ import (
 const WireVersion = byte(0x01)
 
 // maxCiphertextSize is the maximum allowed GCM output length (plaintext + 16-byte tag)
-// in a message. Prevents OOM allocation from untrusted length fields. The effective
-// maximum plaintext is maxCiphertextSize - AESGCMTagSize (16 bytes).
-const maxCiphertextSize = 1 << 20 // 1 MB
+// in a message, so 128 MiB less the tag is the largest plaintext. A length field
+// never sizes an allocation by itself (readLengthPrefixed reads only the bytes that
+// arrive), so this bounds honest messages, not what a forged length can cost.
+const maxCiphertextSize = 128 << 20 // 128 MiB
 
 // maxSignedMessageSize is the maximum bundled signed message size.
 const maxSignedMessageSize = maxCiphertextSize + HybridCiphertextSize + HybridPublicKeySize + 512
@@ -388,8 +389,7 @@ func UnmarshalPreKeyMessageWire(r io.Reader) (*PreKeyMessageWire, error) {
 		return nil, fmt.Errorf("preKeyMsg: bundled message length %d exceeds maximum %d", msgLen, maxSignedMessageSize)
 	}
 	if msgLen > 0 {
-		m.SignedMessageBytes = make([]byte, msgLen)
-		if err = readFull(r, m.SignedMessageBytes); err != nil {
+		if m.SignedMessageBytes, err = readLengthPrefixed(r, msgLen); err != nil {
 			return nil, fmt.Errorf("preKeyMsg: signedMessage: %w", err)
 		}
 	}
@@ -498,8 +498,7 @@ func UnmarshalMessageProtocol(b []byte) (*ParsedMessageProtocol, error) {
 	if ctLen > maxCiphertextSize {
 		return nil, fmt.Errorf("msg: ciphertext length %d exceeds maximum %d", ctLen, maxCiphertextSize)
 	}
-	m.CipherText = make([]byte, ctLen)
-	if err = readFull(r, m.CipherText); err != nil {
+	if m.CipherText, err = readLengthPrefixed(r, ctLen); err != nil {
 		return nil, fmt.Errorf("msg: ciphertext: %w", err)
 	}
 	if r.remaining() != 0 {
@@ -593,6 +592,20 @@ func readUint32(r io.Reader) (uint32, error) {
 		return 0, err
 	}
 	return binary.BigEndian.Uint32(b), nil
+}
+
+// readLengthPrefixed reads the n bytes a length field announced. It grows the
+// buffer with what actually arrives, so a short input claiming a huge length
+// fails without allocating that length.
+func readLengthPrefixed(r io.Reader, n uint32) ([]byte, error) {
+	buf, err := io.ReadAll(io.LimitReader(r, int64(n)))
+	if err != nil {
+		return nil, err
+	}
+	if uint32(len(buf)) != n {
+		return nil, io.ErrUnexpectedEOF
+	}
+	return buf, nil
 }
 
 func readFull(r io.Reader, buf []byte) error {
