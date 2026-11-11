@@ -6,9 +6,7 @@
  * Documented in comments at createReceivingChain.
  */
 
-import {
-  INFO_RATCHET, MAX_SKIP, MAX_OLD_EPOCH_SKIP,
-} from "./constants.js";
+import { INFO_RATCHET, MAX_SKIP, MAX_OLD_EPOCH_SKIP } from "./constants.js";
 import { hkdfExtract, hkdfExpand, hmacSHA256, aesGcmEncrypt, aesGcmDecrypt, concat, constantTimeEqual } from "./crypto.js";
 import { SymmetricChain, type KEMRatchetStep, deriveMessageKeys } from "./chain.js";
 import { generateKEMKeyPair, encapsulate, decapsulate, zeroKEMKeyPair, type HybridKEMKeyPair } from "./kem.js";
@@ -58,13 +56,7 @@ export class Session {
   initiatorSigningKeyBytes: Uint8Array;
   responderSigningKeyBytes: Uint8Array;
 
-  constructor(
-    rootKey: Uint8Array,
-    ratchetKP: HybridKEMKeyPair,
-    ad: Uint8Array,
-    initiatorSigningKeyBytes: Uint8Array,
-    responderSigningKeyBytes: Uint8Array,
-  ) {
+  constructor(rootKey: Uint8Array, ratchetKP: HybridKEMKeyPair, ad: Uint8Array, initiatorSigningKeyBytes: Uint8Array, responderSigningKeyBytes: Uint8Array) {
     this.rootKey = rootKey;
     this.ratchetKP = ratchetKP;
     this.ad = ad;
@@ -119,19 +111,14 @@ export class Session {
    * Pass them directly to the recipient's open().
    */
   async seal(plaintext: Uint8Array): Promise<Uint8Array> {
-    const enc   = await this.encryptMessage(plaintext);
+    const enc = await this.encryptMessage(plaintext);
     const inner = marshalMessageProtocol({
-      counter:          enc.counter,
+      counter: enc.counter,
       senderRatchetPub: enc.newRatchetPub,
-      ratchetCT:        enc.ratchetCT,
-      ciphertext:       enc.ciphertext,
+      ratchetCT: enc.ratchetCT,
+      ciphertext: enc.ciphertext,
     });
-    const hmacInput = buildHMACInput(
-      this.ad,
-      this.initiatorSigningKeyBytes,
-      this.responderSigningKeyBytes,
-      inner,
-    );
+    const hmacInput = buildHMACInput(this.ad, this.initiatorSigningKeyBytes, this.responderSigningKeyBytes, inner);
     const sig = await hmacSHA256(enc.hmacKey, hmacInput);
     return marshalSignedMessage(inner, sig);
   }
@@ -143,14 +130,7 @@ export class Session {
    */
   async open(wireBytes: Uint8Array): Promise<Uint8Array> {
     const sm = unmarshalSignedMessage(wireBytes);
-    return this.decryptMessage(
-      sm.message.counter,
-      sm.message.senderRatchetPub,
-      sm.message.ratchetCT,
-      sm.message.ciphertext,
-      sm.hmacSig,
-      sm.messageRaw,
-    );
+    return this.decryptMessage(sm.message.counter, sm.message.senderRatchetPub, sm.message.ratchetCT, sm.message.ciphertext, sm.hmacSig, sm.messageRaw);
   }
 
   // ─── Decrypt ───────────────────────────────────────────────────────────────
@@ -192,16 +172,14 @@ export class Session {
     }
 
     // New ratchet epoch?
-    const isNewEpoch = !this.currentStep ||
-      !equalBytes(senderRatchetPub, this.currentStep.remoteRatchetKey);
+    const isNewEpoch = !this.currentStep || !equalBytes(senderRatchetPub, this.currentStep.remoteRatchetKey);
 
     if (isNewEpoch) {
       if (ratchetCT === null) throw new Error("pqcratchet: new ratchet epoch but no CT");
 
       // Cache remaining keys from current receiving chain
       if (this.currentStep?.receivingChain) {
-        await this.skipKeys(this.currentStep.receivingChain, MAX_OLD_EPOCH_SKIP,
-          this.currentStep.remoteRatchetKey);
+        await this.skipKeys(this.currentStep.receivingChain, MAX_OLD_EPOCH_SKIP, this.currentStep.remoteRatchetKey);
       }
 
       // Create new receiving chain from the ratchet CT
@@ -247,12 +225,7 @@ export class Session {
     return this.decryptWithKey(cipherKey, ciphertext, hmacSignature, messageRaw);
   }
 
-  private async decryptWithKey(
-    cipherKey: Uint8Array,
-    ciphertext: Uint8Array,
-    hmacSignature: Uint8Array,
-    messageRaw: Uint8Array,
-  ): Promise<Uint8Array> {
+  private async decryptWithKey(cipherKey: Uint8Array, ciphertext: Uint8Array, hmacSignature: Uint8Array, messageRaw: Uint8Array): Promise<Uint8Array> {
     const keys = await deriveMessageKeys(cipherKey);
 
     // Verify outer HMAC first
@@ -346,7 +319,9 @@ function skippedKeyID(ratchetPub: Uint8Array, counter: number): string {
 }
 
 function hex(b: Uint8Array): string {
-  return Array.from(b).map(x => x.toString(16).padStart(2, "0")).join("");
+  return Array.from(b)
+    .map((x) => x.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function equalBytes(a: Uint8Array, b: Uint8Array): boolean {

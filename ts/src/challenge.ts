@@ -28,13 +28,8 @@ function checkNonce(name: string, nonce: Uint8Array): void {
  * Matches Go's ComputeChallenge byte for byte.
  * @deprecated A man-in-the-middle can grind keys offline to match this PIN; use computeChallengeV2.
  */
-export async function computeChallenge(
-  serverSigningPub: Uint8Array,
-  clientSigningPub: Uint8Array,
-): Promise<string> {
-  return pinFromDigest(
-    await sha256(concat(CHALLENGE_LABEL, await sha256(serverSigningPub), await sha256(clientSigningPub))),
-  );
+export async function computeChallenge(serverSigningPub: Uint8Array, clientSigningPub: Uint8Array): Promise<string> {
+  return pinFromDigest(await sha256(concat(CHALLENGE_LABEL, await sha256(serverSigningPub), await sha256(clientSigningPub))));
 }
 
 /** newChallengeNonce returns CHALLENGE_NONCE_SIZE bytes from crypto.getRandomValues. */
@@ -46,20 +41,13 @@ export function newChallengeNonce(): Uint8Array {
  * commitChallengeNonce returns SHA-256("pqcratchet/v1/Commit" || SHA-256(clientSigningPub) || clientNonce),
  * which the client sends before seeing the server's nonce. Throws on a wrong nonce size.
  */
-export async function commitChallengeNonce(
-  clientSigningPub: Uint8Array,
-  clientNonce: Uint8Array,
-): Promise<Uint8Array> {
+export async function commitChallengeNonce(clientSigningPub: Uint8Array, clientNonce: Uint8Array): Promise<Uint8Array> {
   checkNonce("client nonce", clientNonce);
   return sha256(concat(COMMIT_LABEL, await sha256(clientSigningPub), clientNonce));
 }
 
 /** verifyChallengeCommit reports in constant time whether commit opens to clientNonce for clientSigningPub. */
-export async function verifyChallengeCommit(
-  clientSigningPub: Uint8Array,
-  clientNonce: Uint8Array,
-  commit: Uint8Array,
-): Promise<boolean> {
+export async function verifyChallengeCommit(clientSigningPub: Uint8Array, clientNonce: Uint8Array, commit: Uint8Array): Promise<boolean> {
   if (clientNonce.length !== CHALLENGE_NONCE_SIZE || commit.length !== CHALLENGE_COMMIT_SIZE) return false;
   return constantTimeEqual(await commitChallengeNonce(clientSigningPub, clientNonce), commit);
 }
@@ -69,17 +57,8 @@ export async function verifyChallengeCommit(
  * BE-uint64(SHA-256("pqcratchet/v1/Challenge2" || SHA-256(serverSigningPub) || SHA-256(clientSigningPub) || clientNonce || serverNonce)[0:8]) mod 10^6.
  * Matches Go's ComputeChallengeV2 byte for byte. Throws on wrong nonce sizes.
  */
-export async function computeChallengeV2(
-  serverSigningPub: Uint8Array,
-  clientSigningPub: Uint8Array,
-  clientNonce: Uint8Array,
-  serverNonce: Uint8Array,
-): Promise<string> {
+export async function computeChallengeV2(serverSigningPub: Uint8Array, clientSigningPub: Uint8Array, clientNonce: Uint8Array, serverNonce: Uint8Array): Promise<string> {
   checkNonce("client nonce", clientNonce);
   checkNonce("server nonce", serverNonce);
-  return pinFromDigest(
-    await sha256(
-      concat(CHALLENGE2_LABEL, await sha256(serverSigningPub), await sha256(clientSigningPub), clientNonce, serverNonce),
-    ),
-  );
+  return pinFromDigest(await sha256(concat(CHALLENGE2_LABEL, await sha256(serverSigningPub), await sha256(clientSigningPub), clientNonce, serverNonce)));
 }

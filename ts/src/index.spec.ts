@@ -16,14 +16,24 @@
 
 import { expect, test } from "vitest";
 import {
-  generateKEMKeyPair, encapsulate, decapsulate,
+  generateKEMKeyPair,
+  encapsulate,
+  decapsulate,
   HYBRID_PRIVATE_KEY_SIZE_TS,
-  generateDSAKeyPair, dsaSign, dsaVerify,
-  SymmetricChain, deriveMessageKeys,
-  authenticateA, authenticateB,
-  generateIdentity, createSessionInitiator, createSessionResponder,
-  concat, randomBytes,
-  HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
+  generateDSAKeyPair,
+  dsaSign,
+  dsaVerify,
+  SymmetricChain,
+  deriveMessageKeys,
+  authenticateA,
+  authenticateB,
+  generateIdentity,
+  createSessionInitiator,
+  createSessionResponder,
+  concat,
+  randomBytes,
+  HYBRID_PUBLIC_KEY_SIZE,
+  HYBRID_CIPHERTEXT_SIZE,
   DSA_SIGNATURE_SIZE,
 } from "./index.js";
 
@@ -141,13 +151,7 @@ test("X3DH both sides derive same root key", async () => {
   const bobSpk = generateKEMKeyPair();
   const bobOpk = generateKEMKeyPair();
 
-  const result = await authenticateA(
-    aliceSign.privateKey,
-    aliceEx.publicKey,
-    bobEx.publicKey,
-    bobSpk.publicKey,
-    bobOpk.publicKey,
-  );
+  const result = await authenticateA(aliceSign.privateKey, aliceEx.publicKey, bobEx.publicKey, bobSpk.publicKey, bobOpk.publicKey);
 
   const rootKey2 = await authenticateB(
     bobEx.privateKey,
@@ -171,13 +175,7 @@ test("X3DH without OPK derives same root key", async () => {
   const bobEx = generateKEMKeyPair();
   const bobSpk = generateKEMKeyPair();
 
-  const result = await authenticateA(
-    aliceSign.privateKey,
-    aliceEx.publicKey,
-    bobEx.publicKey,
-    bobSpk.publicKey,
-    null,
-  );
+  const result = await authenticateA(aliceSign.privateKey, aliceEx.publicKey, bobEx.publicKey, bobSpk.publicKey, null);
 
   const rootKey2 = await authenticateB(
     bobEx.privateKey,
@@ -201,18 +199,12 @@ test("X3DH invalid signature rejects", async () => {
   const bobEx = generateKEMKeyPair();
   const bobSpk = generateKEMKeyPair();
 
-  const result = await authenticateA(
-    aliceSign.privateKey, aliceEx.publicKey,
-    bobEx.publicKey, bobSpk.publicKey, null,
-  );
+  const result = await authenticateA(aliceSign.privateKey, aliceEx.publicKey, bobEx.publicKey, bobSpk.publicKey, null);
 
   const badSig = randomBytes(DSA_SIGNATURE_SIZE);
-  await expect(authenticateB(
-    bobEx.privateKey, bobSpk.privateKey, null,
-    aliceSign.publicKey, aliceEx.publicKey,
-    result.ephemeralKP.publicKey, result.ct1, result.ct2, null,
-    badSig,
-  )).rejects.toThrow("invalid signature");
+  await expect(authenticateB(bobEx.privateKey, bobSpk.privateKey, null, aliceSign.publicKey, aliceEx.publicKey, result.ephemeralKP.publicKey, result.ct1, result.ct2, null, badSig)).rejects.toThrow(
+    "invalid signature",
+  );
 });
 
 // ─── Full session tests ───────────────────────────────────────────────────────
@@ -227,17 +219,13 @@ test("full handshake and single message", async () => {
   const counterBytes = new Uint8Array(4);
   new DataView(counterBytes.buffer).setUint32(0, enc.counter, false);
   const hasRatchetCT = enc.ratchetCT ? new Uint8Array([1]) : new Uint8Array([0]);
-  const inner = enc.ratchetCT
-    ? concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ratchetCT, enc.ciphertext)
-    : concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ciphertext);
+  const inner = enc.ratchetCT ? concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ratchetCT, enc.ciphertext) : concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ciphertext);
 
   const { hmacSHA256 } = await import("./crypto.js");
   const hmacInput = concat(aliceSess.ad, aliceSess.initiatorSigningKeyBytes, aliceSess.responderSigningKeyBytes, inner);
   const sig = await hmacSHA256(enc.hmacKey, hmacInput);
 
-  const decrypted = await bobSess.decryptMessage(
-    enc.counter, enc.newRatchetPub, enc.ratchetCT, enc.ciphertext, sig, inner,
-  );
+  const decrypted = await bobSess.decryptMessage(enc.counter, enc.newRatchetPub, enc.ratchetCT, enc.ciphertext, sig, inner);
 
   expect(decrypted).toEqual(pt);
 });
@@ -252,9 +240,7 @@ test("multi-turn bidirectional messaging", async () => {
     const counterBytes = new Uint8Array(4);
     new DataView(counterBytes.buffer).setUint32(0, enc.counter, false);
     const hasRatchetCT = enc.ratchetCT ? new Uint8Array([1]) : new Uint8Array([0]);
-    const inner = enc.ratchetCT
-      ? concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ratchetCT, enc.ciphertext)
-      : concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ciphertext);
+    const inner = enc.ratchetCT ? concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ratchetCT, enc.ciphertext) : concat(counterBytes, enc.newRatchetPub, hasRatchetCT, enc.ciphertext);
     const hmacInput = concat(senderSess.ad, senderSess.initiatorSigningKeyBytes, senderSess.responderSigningKeyBytes, inner);
     const sig = await hmacSHA256(enc.hmacKey, hmacInput);
     return receiverSess.decryptMessage(enc.counter, enc.newRatchetPub, enc.ratchetCT, enc.ciphertext, sig, inner);
@@ -325,6 +311,5 @@ test("seal/open high-level API — bidirectional multi-turn", async () => {
   expect(dec.decode(await aliceSess.open(w6))).toBe("bob final");
 
   // Both sides must converge on the same root key
-  expect(Buffer.from(aliceSess.rootKey).toString("hex"))
-    .toBe(Buffer.from(bobSess.rootKey).toString("hex"));
+  expect(Buffer.from(aliceSess.rootKey).toString("hex")).toBe(Buffer.from(bobSess.rootKey).toString("hex"));
 });

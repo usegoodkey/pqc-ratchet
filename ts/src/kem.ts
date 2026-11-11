@@ -21,9 +21,14 @@
 import { ml_kem768 } from "@noble/post-quantum/ml-kem.js";
 import { x25519 } from "@noble/curves/ed25519.js";
 import {
-  HYBRID_PUBLIC_KEY_SIZE, HYBRID_CIPHERTEXT_SIZE,
-  MLKEM_PUBLIC_KEY_SIZE, MLKEM_KEY_SEED_SIZE, MLKEM_CIPHERTEXT_SIZE,
-  MLKEM_ENCAP_SEED_SIZE, X25519_KEY_SIZE, INFO_HYBRID_KEM,
+  HYBRID_PUBLIC_KEY_SIZE,
+  HYBRID_CIPHERTEXT_SIZE,
+  MLKEM_PUBLIC_KEY_SIZE,
+  MLKEM_KEY_SEED_SIZE,
+  MLKEM_CIPHERTEXT_SIZE,
+  MLKEM_ENCAP_SEED_SIZE,
+  X25519_KEY_SIZE,
+  INFO_HYBRID_KEM,
 } from "./constants.js";
 import { sha256, hkdf, concat, randomBytes, zero } from "./crypto.js";
 
@@ -36,7 +41,7 @@ export const HYBRID_PRIVATE_KEY_SIZE_TS = MLKEM_SECRET_KEY_SIZE + X25519_KEY_SIZ
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface HybridKEMKeyPair {
-  publicKey: Uint8Array;  // HYBRID_PUBLIC_KEY_SIZE (1216) bytes
+  publicKey: Uint8Array; // HYBRID_PUBLIC_KEY_SIZE (1216) bytes
   privateKey: Uint8Array; // HYBRID_PRIVATE_KEY_SIZE_TS (2432) bytes (in-memory expanded form)
 }
 
@@ -50,9 +55,7 @@ export interface HybridKEMKeyPair {
  */
 export function generateKEMKeyPair(seed?: Uint8Array): HybridKEMKeyPair {
   const mlkemSeed = seed ? seed.slice(0, MLKEM_KEY_SEED_SIZE) : randomBytes(MLKEM_KEY_SEED_SIZE);
-  const x25519Priv = seed
-    ? seed.slice(MLKEM_KEY_SEED_SIZE, MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE)
-    : randomBytes(X25519_KEY_SIZE);
+  const x25519Priv = seed ? seed.slice(MLKEM_KEY_SEED_SIZE, MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE) : randomBytes(X25519_KEY_SIZE);
 
   // noble requires both calls to use the same seed to get matching pub/priv
   const { publicKey: mlkemPub, secretKey: mlkemPriv } = ml_kem768.keygen(mlkemSeed);
@@ -81,10 +84,7 @@ export function zeroKEMKeyPair(kp: HybridKEMKeyPair): void {
  * encapSeed is for deterministic testing (64+ bytes: 32 ML-KEM + 32 X25519).
  * In production, omit encapSeed.
  */
-export async function encapsulate(
-  pub: Uint8Array,
-  encapSeed?: Uint8Array
-): Promise<{ ciphertext: Uint8Array; sharedSecret: Uint8Array }> {
+export async function encapsulate(pub: Uint8Array, encapSeed?: Uint8Array): Promise<{ ciphertext: Uint8Array; sharedSecret: Uint8Array }> {
   if (pub.length !== HYBRID_PUBLIC_KEY_SIZE) {
     throw new Error(`pqcratchet: public key must be ${HYBRID_PUBLIC_KEY_SIZE} bytes`);
   }
@@ -93,19 +93,15 @@ export async function encapsulate(
   const x25519RecipientPub = pub.slice(MLKEM_PUBLIC_KEY_SIZE);
 
   // ML-KEM encapsulation
-  const mlkemEncapSeed = encapSeed
-    ? encapSeed.slice(0, MLKEM_ENCAP_SEED_SIZE)
-    : randomBytes(MLKEM_ENCAP_SEED_SIZE);
+  const mlkemEncapSeed = encapSeed ? encapSeed.slice(0, MLKEM_ENCAP_SEED_SIZE) : randomBytes(MLKEM_ENCAP_SEED_SIZE);
   const { cipherText: mlkemCT, sharedSecret: mlkemSS } = ml_kem768.encapsulate(mlkemPub, mlkemEncapSeed);
 
   // X25519 ephemeral encapsulation
-  const ephemeralPriv = encapSeed
-    ? encapSeed.slice(MLKEM_ENCAP_SEED_SIZE, MLKEM_ENCAP_SEED_SIZE + X25519_KEY_SIZE)
-    : randomBytes(X25519_KEY_SIZE);
+  const ephemeralPriv = encapSeed ? encapSeed.slice(MLKEM_ENCAP_SEED_SIZE, MLKEM_ENCAP_SEED_SIZE + X25519_KEY_SIZE) : randomBytes(X25519_KEY_SIZE);
   const ephemeralPub = x25519.getPublicKey(ephemeralPriv);
   const x25519SS = x25519.getSharedSecret(ephemeralPriv, x25519RecipientPub);
 
-  if (x25519SS.every(b => b === 0)) {
+  if (x25519SS.every((b) => b === 0)) {
     throw new Error("pqcratchet: x25519 DH produced all-zero shared secret (low-order point)");
   }
 
@@ -119,10 +115,7 @@ export async function encapsulate(
 
 // ─── Decapsulate ─────────────────────────────────────────────────────────────
 
-export async function decapsulate(
-  priv: Uint8Array,
-  ciphertext: Uint8Array
-): Promise<Uint8Array> {
+export async function decapsulate(priv: Uint8Array, ciphertext: Uint8Array): Promise<Uint8Array> {
   if (priv.length !== HYBRID_PRIVATE_KEY_SIZE_TS) {
     throw new Error(`pqcratchet: private key must be ${HYBRID_PRIVATE_KEY_SIZE_TS} bytes`);
   }
@@ -141,7 +134,7 @@ export async function decapsulate(
   // X25519 decapsulation
   const x25519SS = x25519.getSharedSecret(x25519Priv, ephemeralPub);
 
-  if (x25519SS.every(b => b === 0)) {
+  if (x25519SS.every((b) => b === 0)) {
     throw new Error("pqcratchet: x25519 DH produced all-zero shared secret (low-order point)");
   }
 
@@ -164,11 +157,7 @@ export async function decapsulate(
  * The SHA256(recipientPub) salt binds the output to the specific recipient,
  * preventing cross-key confusion attacks.
  */
-async function combineKEMSecrets(
-  mlkemSS: Uint8Array,
-  x25519SS: Uint8Array,
-  recipientPub: Uint8Array
-): Promise<Uint8Array> {
+async function combineKEMSecrets(mlkemSS: Uint8Array, x25519SS: Uint8Array, recipientPub: Uint8Array): Promise<Uint8Array> {
   const ikm = concat(mlkemSS, x25519SS);
   const salt = await sha256(recipientPub);
   return hkdf(ikm, salt, INFO_HYBRID_KEM, 32);
@@ -185,9 +174,7 @@ async function combineKEMSecrets(
  */
 export function kemKeyPairFromGoSeed(goPriv: Uint8Array): HybridKEMKeyPair {
   if (goPriv.length !== MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE) {
-    throw new Error(
-      `pqcratchet: Go private key must be ${MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE} bytes, got ${goPriv.length}`
-    );
+    throw new Error(`pqcratchet: Go private key must be ${MLKEM_KEY_SEED_SIZE + X25519_KEY_SIZE} bytes, got ${goPriv.length}`);
   }
   const mlkemSeed = goPriv.slice(0, MLKEM_KEY_SEED_SIZE);
   const x25519Priv = goPriv.slice(MLKEM_KEY_SEED_SIZE);

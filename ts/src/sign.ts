@@ -14,7 +14,7 @@ import { DSA_PUBLIC_KEY_SIZE, DSA_PRIVATE_KEY_SIZE, DSA_SIGNATURE_SIZE } from ".
 import { randomBytes } from "./crypto.js";
 
 export interface DSAKeyPair {
-  publicKey: Uint8Array;  // DSA_PUBLIC_KEY_SIZE (1952) bytes
+  publicKey: Uint8Array; // DSA_PUBLIC_KEY_SIZE (1952) bytes
   privateKey: Uint8Array; // DSA_PRIVATE_KEY_SIZE (4032) bytes
 }
 

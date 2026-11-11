@@ -14,9 +14,7 @@ interface Vector {
 }
 
 // The vectors live in the Go module so they ship with it; resolve them from this file, not cwd.
-const vectorsPath = fileURLToPath(
-  new URL("../../go/pqcratchet/testdata/challenge_vectors.json", import.meta.url),
-);
+const vectorsPath = fileURLToPath(new URL("../../go/pqcratchet/testdata/challenge_vectors.json", import.meta.url));
 const { vectors } = JSON.parse(readFileSync(vectorsPath, "utf8")) as { vectors: Vector[] };
 
 const fromHex = (h: string) => Uint8Array.from(Buffer.from(h, "hex"));

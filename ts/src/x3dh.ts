@@ -18,9 +18,7 @@
  *   SK = HKDF(0xFF×32 || ss1 || ss2 [|| ss3])
  */
 
-import {
-  INFO_KEM_INIT,
-} from "./constants.js";
+import { INFO_KEM_INIT } from "./constants.js";
 import { hkdf, concat } from "./crypto.js";
 import { encapsulate, decapsulate, generateKEMKeyPair, type HybridKEMKeyPair } from "./kem.js";
 import { dsaSign, dsaVerify } from "./sign.js";
@@ -84,7 +82,7 @@ export async function authenticateB(
   oneTimePreKeyPriv: Uint8Array | null,
   initiatorSigningPub: Uint8Array,
   initiatorExchangePub: Uint8Array,
-  baseKey: Uint8Array,          // EK_A.pub
+  baseKey: Uint8Array, // EK_A.pub
   ct1: Uint8Array,
   ct2: Uint8Array,
   ct4: Uint8Array | null,
@@ -118,13 +116,7 @@ export async function authenticateB(
 
 // ─── Transcript ──────────────────────────────────────────────────────────────
 
-function buildInitiatorTranscript(
-  initiatorExchangePub: Uint8Array,
-  ct1: Uint8Array,
-  ct2: Uint8Array,
-  baseKey: Uint8Array,
-  ct4: Uint8Array | null,
-): Uint8Array {
+function buildInitiatorTranscript(initiatorExchangePub: Uint8Array, ct1: Uint8Array, ct2: Uint8Array, baseKey: Uint8Array, ct4: Uint8Array | null): Uint8Array {
   const parts: Uint8Array[] = [initiatorExchangePub, ct1, ct2, baseKey];
   if (ct4 !== null) parts.push(ct4);
   return concat(...parts);
@@ -132,16 +124,12 @@ function buildInitiatorTranscript(
 
 // ─── Root key derivation ─────────────────────────────────────────────────────
 
-async function deriveKEMRootKey(
-  ss1: Uint8Array,
-  ss2: Uint8Array,
-  ss3: Uint8Array | null,
-): Promise<Uint8Array> {
+async function deriveKEMRootKey(ss1: Uint8Array, ss2: Uint8Array, ss3: Uint8Array | null): Promise<Uint8Array> {
   if (ss1.length !== 32) throw new Error(`pqcratchet: x3dh ss1 must be 32 bytes, got ${ss1.length}`);
   if (ss2.length !== 32) throw new Error(`pqcratchet: x3dh ss2 must be 32 bytes, got ${ss2.length}`);
   if (ss3 !== null && ss3.length !== 32) throw new Error(`pqcratchet: x3dh ss3 must be 32 bytes, got ${ss3.length}`);
 
-  const domainSep = new Uint8Array(32).fill(0xFF);
+  const domainSep = new Uint8Array(32).fill(0xff);
   const parts: Uint8Array[] = [domainSep, ss1, ss2];
   if (ss3 !== null) parts.push(ss3);
   const keyMaterial = concat(...parts);
