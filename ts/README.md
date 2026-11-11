@@ -1,4 +1,13 @@
-# @usegoodkey/pqc-ratchet
+<h1 align="center">
+  @usegoodkey/pqc-ratchet
+</h1>
+
+<div align="center">
+
+![GitHub License](https://img.shields.io/github/license/usegoodkey/pqc-ratchet)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/usegoodkey/pqc-ratchet/publish.yml?branch=main&label=publish)
+
+</div>
 
 > **v0 — no API or wire stability guarantees.**
 
@@ -89,7 +98,6 @@ also exported.
 | --------------------- | ------------------------------------------- |
 | `@noble/post-quantum` | ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204) |
 | `@noble/curves`       | X25519                                      |
-| `@noble/hashes`       | SHA-256 (via noble transitive dep)          |
 
 WebCrypto (built-in) handles AES-256-GCM, HMAC-SHA-256, HKDF-SHA-256.
 
@@ -99,7 +107,7 @@ WebCrypto (built-in) handles AES-256-GCM, HMAC-SHA-256, HKDF-SHA-256.
 npm test
 ```
 
-17 tests covering KEM round-trip, DSA sign/verify, symmetric chain, X3DH both sides, full session, multi-turn messaging, OPK restoration on auth failure, and seal/open high-level API.
+Tests cover KEM round-trip, DSA sign/verify, symmetric chain, X3DH both sides, full session, multi-turn messaging, OPK restoration on auth failure, and seal/open high-level API, plus the shared pairing-code vectors from the Go module. See [CONTRIBUTING.md](https://github.com/usegoodkey/pqc-ratchet/blob/main/CONTRIBUTING.md) for all checks and the Go interop test.
 
 ## Go interop
 

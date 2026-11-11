@@ -1,4 +1,13 @@
-# pqc-ratchet
+<h1 align="center">
+  pqc-ratchet
+</h1>
+
+<div align="center">
+
+![GitHub License](https://img.shields.io/github/license/usegoodkey/pqc-ratchet)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/usegoodkey/pqc-ratchet/publish.yml?branch=main&label=publish)
+
+</div>
 
 Post-quantum Double Ratchet + X3DH in Go and TypeScript.
 
@@ -9,6 +18,22 @@ ts/   — TypeScript implementation (WebCrypto, @noble/post-quantum)
 
 Both implementations share the same binary wire format and are verified by a
 cross-language interop test (`go/pqcratchet/interop_test.go`).
+
+## Install
+
+Go:
+
+```bash
+go get github.com/usegoodkey/pqc-ratchet/go@latest
+```
+
+TypeScript:
+
+```bash
+npm install @usegoodkey/pqc-ratchet
+```
+
+Both share one version: release `vX.Y.Z` is tagged `go/vX.Y.Z` for the Go module.
 
 ## Algorithms
 
@@ -64,8 +89,6 @@ console.log(new TextDecoder().decode(pt)); // "hello"
 ```
 
 ### Sending a message (Go)
-
-Install: `go get github.com/usegoodkey/pqc-ratchet/go`
 
 ```go
 import pqc "github.com/usegoodkey/pqc-ratchet/go/pqcratchet"
@@ -143,3 +166,7 @@ ts/
 ## v0 stability
 
 No API or wire format stability guarantees. Not production-ready.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the checks, the interop test and the release flow.
