@@ -1,9 +1,9 @@
-# @peculiarventures/pqc-ratchet
+# @usegoodkey/pqc-ratchet
 
 > **v0 — no API or wire stability guarantees.**
 
 Post-quantum Double Ratchet + X3DH in TypeScript.  
-Wire-compatible with [github.com/PeculiarVentures/pqc-ratchet](https://github.com/PeculiarVentures/pqc-ratchet) (Go).
+Wire-compatible with the Go module [github.com/usegoodkey/pqc-ratchet/go](https://github.com/usegoodkey/pqc-ratchet/tree/main/go).
 
 Works in **browsers, Node ≥ 18, Deno, and Bun** — uses only WebCrypto and `@noble/post-quantum`.
 
@@ -40,7 +40,7 @@ deployments, use the Go implementation with a FIPS-validated Go crypto module.
 ## Install
 
 ```bash
-npm install @peculiarventures/pqc-ratchet
+npm install @usegoodkey/pqc-ratchet
 ```
 
 ## Quick start
@@ -50,7 +50,7 @@ import {
   generateIdentity,
   createSessionInitiator,
   createSessionResponder,
-} from "@peculiarventures/pqc-ratchet";
+} from "@usegoodkey/pqc-ratchet";
 
 // Generate identities
 const alice = await generateIdentity(1, 1, 10);

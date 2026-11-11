@@ -1,7 +1,7 @@
 {
-  "name": "@peculiarventures/pqc-ratchet",
+  "name": "@usegoodkey/pqc-ratchet",
   "version": "0.1.0",
-  "description": "Post-quantum Double Ratchet + X3DH in TypeScript (ML-KEM-768, ML-DSA-65). Wire-compatible with github.com/PeculiarVentures/pqc-ratchet.",
+  "description": "Post-quantum Double Ratchet + X3DH in TypeScript (ML-KEM-768, ML-DSA-65). Wire-compatible with the Go module github.com/usegoodkey/pqc-ratchet/go.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -12,6 +12,15 @@
   },
   "keywords": ["post-quantum", "double-ratchet", "x3dh", "ml-kem", "ml-dsa", "signal", "e2ee"],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usegoodkey/pqc-ratchet",
+    "directory": "ts"
+  },
+  "bugs": {
+    "url": "https://github.com/usegoodkey/pqc-ratchet/issues"
+  },
+  "homepage": "https://github.com/usegoodkey/pqc-ratchet/tree/main/ts#readme",
   "dependencies": {
     "@noble/post-quantum": "^0.6.0",
     "@noble/curves": "^1.4.0",
