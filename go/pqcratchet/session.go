@@ -86,20 +86,20 @@ type Session struct {
 
 // PreKeyBundle is a verified, parsed PreKeyBundle ready for session creation.
 type PreKeyBundle struct {
-	RegistrationID         int
-	IdentitySigningPub     *DSAPublicKey
+	RegistrationID          int
+	IdentitySigningPub      *DSAPublicKey
 	IdentitySigningPubBytes []byte
-	IdentityExchangePub    *HybridKEMPublicKey
-	SignedPreKeyPub        *HybridKEMPublicKey
-	SignedPreKeyIndex      int
-	OneTimePreKeyPub       *HybridKEMPublicKey // may be nil
-	OneTimePreKeyIndex     int                 // -1 if none
+	IdentityExchangePub     *HybridKEMPublicKey
+	SignedPreKeyPub         *HybridKEMPublicKey
+	SignedPreKeyIndex       int
+	OneTimePreKeyPub        *HybridKEMPublicKey // may be nil
+	OneTimePreKeyIndex      int                 // -1 if none
 }
 
 // PreKeyMessage is a verified, parsed PreKeyMessage ready for session creation.
 type PreKeyMessage struct {
 	RegistrationID          int
-	SignedPreKeyIndex        int
+	SignedPreKeyIndex       int
 	OneTimePreKeyIndex      int // -1 if none
 	IdentitySigningPub      *DSAPublicKey
 	IdentitySigningPubBytes []byte
@@ -170,7 +170,7 @@ func createSessionInitiator(identity *Identity, bundle *PreKeyBundle, r io.Reade
 		Identity: identity,
 		RemoteIdentity: &RemoteIdentity{
 			ID:               bundle.RegistrationID,
-			SigningKeyBytes:   responderSigningPubBytes,
+			SigningKeyBytes:  responderSigningPubBytes,
 			ExchangeKeyBytes: bundle.IdentityExchangePub[:],
 			Thumbprint:       Thumbprint(responderSigningPubBytes),
 		},
@@ -282,7 +282,7 @@ func CreateSessionResponder(identity *Identity, msg *PreKeyMessage) (*Session, e
 		Identity: identity,
 		RemoteIdentity: &RemoteIdentity{
 			ID:               msg.RegistrationID,
-			SigningKeyBytes:   initiatorSigningPubBytes,
+			SigningKeyBytes:  initiatorSigningPubBytes,
 			ExchangeKeyBytes: msg.IdentityExchangePub[:],
 			Thumbprint:       Thumbprint(initiatorSigningPubBytes),
 		},
@@ -310,8 +310,8 @@ func CreateSessionResponder(identity *Identity, msg *PreKeyMessage) (*Session, e
 // These two functions implement the KEM-based Continuous Key Agreement (CKA)
 // scheme of Alwen, Coretti, Dodis (ACD19) [1], Section 3.3:
 //
-//   createSendingChain  → ACD19 CKA-S (sender step)
-//   createReceivingChain → ACD19 CKA-R (receiver step)
+//	createSendingChain  → ACD19 CKA-S (sender step)
+//	createReceivingChain → ACD19 CKA-R (receiver step)
 //
 // In ACD19 terms, CKA-S generates a fresh public key (RatchetKP.Public) and
 // encapsulates against the remote ratchet key (EpochRatchetCT). CKA-R
@@ -322,8 +322,8 @@ func CreateSessionResponder(identity *Identity, msg *PreKeyMessage) (*Session, e
 // Security: ACD19 Theorem 2 proves CKA security under IND-CCA2 of the KEM.
 // ML-KEM-768 is IND-CCA2 secure under MLWE (FIPS 203).
 //
-//   [1] https://eprint.iacr.org/2018/1037
-//   [2] https://signal.org/docs/specifications/doubleratchet/
+//	[1] https://eprint.iacr.org/2018/1037
+//	[2] https://signal.org/docs/specifications/doubleratchet/
 //
 // The encapsulator side:
 //
@@ -458,10 +458,10 @@ func (s *Session) Seal(plaintext []byte) ([]byte, error) {
 		return nil, err
 	}
 	inner := MarshalMessageProtocol(&ParsedMessageProtocol{
-		Counter:         uint32(enc.Counter),
+		Counter:          uint32(enc.Counter),
 		SenderRatchetPub: enc.NewRatchetPub,
-		RatchetCT:       enc.RatchetCT,
-		CipherText:      enc.Ciphertext,
+		RatchetCT:        enc.RatchetCT,
+		CipherText:       enc.Ciphertext,
 	})
 	return MarshalSignedMessage(inner, enc.HMACKey, s.AD, s.InitiatorSigningKeyBytes, s.ResponderSigningKeyBytes), nil
 }
