@@ -1,4 +1,13 @@
-# @usegoodkey/pqc-ratchet
+<h1 align="center">
+  @usegoodkey/pqc-ratchet
+</h1>
+
+<div align="center">
+
+![GitHub License](https://img.shields.io/github/license/usegoodkey/pqc-ratchet)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/usegoodkey/pqc-ratchet/publish.yml?branch=main&label=publish)
+
+</div>
 
 > **v0 — no API or wire stability guarantees.**
 
@@ -39,8 +48,13 @@ deployments, use the Go implementation with a FIPS-validated Go crypto module.
 
 ## Install
 
+The package is not on npm yet. Build it from a release tag and install the tarball:
+
 ```bash
-npm install @usegoodkey/pqc-ratchet
+git clone --depth 1 --branch v0.1.0 https://github.com/usegoodkey/pqc-ratchet.git
+cd pqc-ratchet/ts && npm ci && npm pack
+# in your project:
+npm install /path/to/pqc-ratchet/ts/usegoodkey-pqc-ratchet-0.1.0.tgz
 ```
 
 ## Quick start
@@ -89,7 +103,6 @@ also exported.
 | --------------------- | ------------------------------------------- |
 | `@noble/post-quantum` | ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204) |
 | `@noble/curves`       | X25519                                      |
-| `@noble/hashes`       | SHA-256 (via noble transitive dep)          |
 
 WebCrypto (built-in) handles AES-256-GCM, HMAC-SHA-256, HKDF-SHA-256.
 
@@ -99,7 +112,7 @@ WebCrypto (built-in) handles AES-256-GCM, HMAC-SHA-256, HKDF-SHA-256.
 npm test
 ```
 
-17 tests covering KEM round-trip, DSA sign/verify, symmetric chain, X3DH both sides, full session, multi-turn messaging, OPK restoration on auth failure, and seal/open high-level API.
+Tests cover KEM round-trip, DSA sign/verify, symmetric chain, X3DH both sides, full session, multi-turn messaging, OPK restoration on auth failure, and seal/open high-level API, plus the shared pairing-code vectors from the Go module. See [CONTRIBUTING.md](https://github.com/usegoodkey/pqc-ratchet/blob/main/CONTRIBUTING.md) for all checks and the Go interop test.
 
 ## Go interop
 
