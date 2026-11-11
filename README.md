@@ -27,7 +27,11 @@ Go:
 go get github.com/usegoodkey/pqc-ratchet/go@latest
 ```
 
-TypeScript (`@usegoodkey/pqc-ratchet`): not on npm yet; see [ts/README.md](ts/README.md#install) to install it from a release tag.
+TypeScript:
+
+```bash
+npm install @usegoodkey/pqc-ratchet
+```
 
 Both share one version: release `vX.Y.Z` is tagged `go/vX.Y.Z` for the Go module.
 

@@ -48,13 +48,8 @@ deployments, use the Go implementation with a FIPS-validated Go crypto module.
 
 ## Install
 
-The package is not on npm yet. Build it from a release tag and install the tarball:
-
 ```bash
-git clone --depth 1 --branch v0.1.0 https://github.com/usegoodkey/pqc-ratchet.git
-cd pqc-ratchet/ts && npm ci && npm pack
-# in your project:
-npm install /path/to/pqc-ratchet/ts/usegoodkey-pqc-ratchet-0.1.0.tgz
+npm install @usegoodkey/pqc-ratchet
 ```
 
 ## Quick start
