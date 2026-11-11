@@ -1,0 +1,116 @@
+name: Test
+
+# Pushes to main are tested by Publish, which calls this workflow before release-please.
+on:
+  pull_request:
+  workflow_call:
+
+jobs:
+  ts:
+    runs-on: ubuntu-24.04
+
+    defaults:
+      run:
+        working-directory: ts
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: ts/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build package
+        run: npm run build
+
+      - name: Check generated package exports are committed
+        run: git diff --exit-code package.json
+
+      - name: Run test with coverage
+        run: npm run coverage
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          base-path: ts
+          file: ts/coverage/lcov.info
+
+  go:
+    runs-on: ubuntu-24.04
+
+    defaults:
+      run:
+        working-directory: go
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # go.mod pins the minimum (go 1.26.0); test on the latest 1.26 patch so govulncheck sees a patched stdlib.
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.x"
+          check-latest: true
+          cache-dependency-path: go/go.sum
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Check go.mod and go.sum are tidy
+        run: go mod tidy -diff
+
+      - name: Run tests
+        run: go test -race ./...
+
+      - name: Check for vulnerabilities
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+
+  # Go generates the fixture, the built TS package decrypts it and replies, Go verifies the replies.
+  interop:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: ts/package-lock.json
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.x"
+          check-latest: true
+          cache-dependency-path: go/go.sum
+
+      - name: Build TS package
+        working-directory: ts
+        run: npm ci && npm run build
+
+      # PQC_REQUIRE_INTEROP turns the test's skips (no build, no node) into failures.
+      - name: Run interop test
+        working-directory: go
+        env:
+          PQC_REQUIRE_INTEROP: "1"
+        run: go test -run TestInteropGoTS -v ./pqcratchet/
